@@ -4,22 +4,24 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score
-import pickle
 
-with open('parkinsons.data', 'rb') as file:
-    data = pickle.load(file)
-with open('parkinsons.names', 'rb') as file:
-    names = pickle.load(file)
+# URL-адрес данных
+data_url = "https://storage.yandexcloud.net/academy.ai/practica/parkinsons.data"
+# URL-адрес описания признаков
+names_url = "https://storage.yandexcloud.net/academy.ai/practica/parkinsons.names"
 
 # Скачивание описания признаков
-response = requests.get(file1)
+response = requests.get(names_url)
 names_content = response.text
 
 # Разделение описания признаков на строки и извлечение имен признаков
 feature_names = [line.split(':')[0].strip() for line in names_content.split('\n') if line.startswith('name')]
 
-# Загрузка данных
-data = pd.read_csv(file, names=feature_names)
+# Добавление имени целевого признака в список имен признаков
+feature_names.append('status')
+
+# Загрузка данных без заголовков и указание имен столбцов
+data = pd.read_csv(data_url, names=feature_names, header=None)
 
 # Разделение данных на признаки и метки
 X = data.drop('status', axis=1)
